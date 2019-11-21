@@ -1,0 +1,255 @@
+
+/* Grid */
+
+.linha{
+	width: 1080px;
+	margin: 0 auto;
+	overflow: auto;
+	padding: 5px 0;
+}
+
+.coluna{
+	padding: 5px 0px;
+	float: left;
+}
+.col1{
+	width: 70px;
+}
+.col2{
+	width: 160px;
+}
+.col3{
+	width: 250px;
+}
+.col4{
+	width: 340px;
+}
+.col5{
+	width: 430px;
+}
+.col6{
+	width: 520px;
+}
+.col7{
+	width: 610px;
+}
+.col8{
+	width: 700px;
+}
+.col9{
+	width: 790px;
+}
+.col10{
+	width: 880px;
+}
+.col11{
+	width: 970px;
+}
+.col12{
+	width: 1060px;
+}
+
+#btnEntre, #btnSair{
+	margin: 25px;
+}
+
+
+/* Ajustando todas imagens que tiverem na pagina */
+img{
+	max-width: 100%;
+	height: auto;
+
+}
+
+/* Ajustando imagem do Logo (imagem que fica no header) */
+header #logo{
+	float: none;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	height: 80px;
+}
+
+
+.header{
+	background-color: #019875;
+}
+
+.footer{
+	background-color: #90C695;
+}
+
+section {
+
+	height: 500px;
+}
+
+section #imgLogin{
+	float: none;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	height: 500px;
+}
+
+header h1{
+	font-family:Arial;
+	font-size: 40px; 
+	color: white;
+}
+
+#btnRecomendacoes, #btnCadPacientes{
+	width: 230px; 
+	height: 35px;
+}
+
+Section #tsthj{
+    width: 230px; 
+    height: 35px;
+}
+
+
+#btnHomeNut{
+	width: 160px; 
+	height: 35px;
+}
+
+#ajuste{
+
+	margin-right: 20px;
+}
+
+.tituloAlimento{
+	font-size: 30px;
+}
+
+#btnMais{
+	margin-left: 20px;
+	margin-right: 20px;
+	left:19px;
+}
+
+#consumoRec{
+	 background-color:#F00;
+}
+
+section #imgimg{
+
+    background:white;
+    transition:all 0.3s ease;
+}
+@-webkit-keyframes swing
+{
+    15%
+    {
+        -webkit-transform: translateX(5px);
+        transform: translateX(5px);
+    }
+    30%
+    {
+        -webkit-transform: translateX(-5px);
+       transform: translateX(-5px);
+    } 
+    50%
+    {
+        -webkit-transform: translateX(3px);
+        transform: translateX(3px);
+    }
+    65%
+    {
+        -webkit-transform: translateX(-3px);
+        transform: translateX(-3px);
+    }
+    80%
+    {
+        -webkit-transform: translateX(2px);
+        transform: translateX(2px);
+    }
+    100%
+    {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+@keyframes swing
+{
+    15%
+    {
+        -webkit-transform: translateX(5px);
+        transform: translateX(5px);
+    }
+    30%
+    {
+        -webkit-transform: translateX(-5px);
+        transform: translateX(-5px);
+    }
+    50%
+    {
+        -webkit-transform: translateX(3px);
+        transform: translateX(3px);
+    }
+    65%
+    {
+        -webkit-transform: translateX(-3px);
+        transform: translateX(-3px);
+    }
+    80%
+    {
+        -webkit-transform: translateX(2px);
+        transform: translateX(2px);
+    }
+    100%
+    {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+    }
+}
+.swing:hover
+{
+        -webkit-animation: swing 1s ease;
+        animation: swing 1s ease;
+        -webkit-animation-iteration-count: 1;
+        animation-iteration-count: 1;
+}
+
+.shrink:hover
+{
+        -webkit-transform: scale(0.8);
+        -ms-transform: scale(0.8);
+        transform: scale(0.8);
+}
+
+.rotate:hover
+{
+        -webkit-transform: rotateZ(-30deg);
+        -ms-transform: rotateZ(-30deg);
+        transform: rotateZ(-30deg);
+}
+
+@keyframes btn {
+    0% {
+        transform:rotate(0);
+    }
+    25% {
+        transform:rotate(10deg);
+    }
+    50% {
+        transform:rotate(0);
+    }
+    75% {
+        transform:rotate(-10deg);
+    }
+    100% {
+        transform:rotate(0);
+    }
+}
+#btnHomeNut {
+    transition: .5s;
+}
+#btnHomeNut:hover {
+    animation-name: btn;
+    animation-delay: .5s;
+    animation-duration: .5s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1
+}
