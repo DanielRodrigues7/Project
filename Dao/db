@@ -1,0 +1,937 @@
+<?php
+	require_once '../Classes/Pessoa.php';
+	require_once '../Classes/Nutricionista.php';
+	require_once '../Classes/Recomendacao.php';
+
+	function connect(){
+			$conn = new mysqli("mysql.hostinger.com.br", "u627070833_andro", "health", "u627070833_healt");
+								mysqli_set_charset($conn,"utf8");
+			if (mysqli_connect_errno()) trigger_error(mysqli_connect_error());
+
+		return $conn;	
+	}
+
+
+	function formatarDataBrasil($data_){
+
+		$data_ = implode('/', array_reverse(explode('-', substr($data_, 0, 10))))." ".substr($data_, 11);
+		return $data_;
+
+	}
+
+
+	function verificarDatasRecomendacao($idUser_, $idNutricionista_, $tipo_){						
+					
+		$conn = connect();
+
+		$sql_consulta_data = "SELECT d.data
+								FROM `Data` d
+								inner join Recomendacoes r
+								on (r.idRecomendacoes = d.Recomendacoes_idRecomendacoes)
+								where r.Usuario_idUsuario = '".$idUser_."'
+								and r.Nutricionista_idNutricionista = '".$idNutricionista_."'
+								and r.tipo = '".$tipo_."';";
+
+		
+		$resultado_datas = $conn->query($sql_consulta_data);
+		
+
+		$rowcount = mysqli_num_rows($resultado_datas);
+
+		if($rowcount > 0){
+
+		return $resultado_datas;
+					//return $row;
+
+		}else {
+			$row = "false";
+		}
+
+												
+		
+		$conn->close();	
+		return $row;
+			
+	}
+
+
+	function verificarDatasRecomendacaoLista($idUser_, $idNutricionista_){						
+					
+		$conn = connect();
+
+		$sql_consulta_data = "SELECT distinct d.data, r.tipo
+								FROM `Data` d
+								inner join Recomendacoes r
+								on (r.idRecomendacoes = d.Recomendacoes_idRecomendacoes)
+								where r.Usuario_idUsuario = '".$idUser_."'
+								and r.Nutricionista_idNutricionista = '".$idNutricionista_."'
+							    order by d.data;";
+
+		
+		$resultado_datas = $conn->query($sql_consulta_data);
+		
+
+		$rowcount = mysqli_num_rows($resultado_datas);
+
+		if($rowcount > 0){
+
+		return $resultado_datas;
+					//return $row;
+
+		}else {
+			$row = "false";
+		}
+
+												
+		
+		$conn->close();	
+		return $row;
+			
+	}
+
+
+
+
+		function verificarEmailCadastro(){						
+					
+		$conn = connect();
+
+		$sql_consulta_email = "SELECT Email 
+								FROM `Login` l
+								inner join NivelDeAcesso n
+								on(n.idNivelAcesso = l.NivelDeAcesso_idNivelAcesso)
+								and n.idNivelAcesso in(2,3);";
+
+		
+		$resultado_email = $conn->query($sql_consulta_email);
+		
+
+		$rowcount = mysqli_num_rows($resultado_email);
+
+		if($rowcount > 0){
+
+		return $resultado_email;
+					//return $row;
+
+		}else {
+			$row = "false";
+		}
+
+												
+		
+		$conn->close();	
+		return $row;
+			
+	}
+
+
+
+
+	function listarRecomendacoesVisualizacao($idUser_, $idNutricionista_, $data_, $tipo_){						
+					
+		$conn = connect();
+
+		$sql_lista = "SELECT distinct r.Descricao, r.Consumo
+								FROM `Recomendacoes` r
+								inner join Data d
+								on (d.Recomendacoes_idRecomendacoes = r.idRecomendacoes)
+								where r.Usuario_idUsuario = '".$idUser_."'
+								and r.Nutricionista_idNutricionista = '".$idNutricionista_."'
+								and d.data = '".$data_."'
+								and r.tipo = '".$tipo_."';";
+
+		
+		$resultado_visualizacao = $conn->query($sql_lista);
+		
+
+		$rowcount = mysqli_num_rows($resultado_visualizacao);
+
+		if($rowcount > 0){
+
+		return $resultado_visualizacao;
+					//return $row;
+
+		}else {
+			$row = "false";
+		}
+
+												
+		
+		$conn->close();	
+		return $row;
+			
+	}
+
+
+
+	function listarDatasEgruposCadastrados($idUser_, $idNutricionista_){						
+					
+		$conn = connect();
+
+		$sql_lista = "SELECT distinct gAlimentos.idGrupoAlimentos as idGrupo, dData.DataDieta as data
+						from Alimentos a
+						inner join CadastroDeDietas_tem_Alimentos cAli
+						on  (a.idAlimentos = cAli.Alimentos_idAlimentos)
+						inner join Dieta_tem_datas dData
+						on (dData.CadastroDeDietas_idCadastroDeDietas = cAli.CadastroDeDietas_idCadastroDeDietas)
+						inner join CadastroDeDietas cadDietas
+						on (cadDietas.idCadastroDeDietas = cAli.CadastroDeDietas_idCadastroDeDietas)
+						and cadDietas.Usuario_idUsuario = '".$idUser_."'
+						and cadDietas.Nutricionista_idNutricionista = '".$idNutricionista_."'
+						inner join GrupoDeAlimentos gAlimentos
+						on (a.GrupoDeAlimentos_idGrupoAlimentos = gAlimentos.idGrupoAlimentos);";
+
+		
+		$resultado_visualizacao = $conn->query($sql_lista);
+		
+
+		$rowcount = mysqli_num_rows($resultado_visualizacao);
+
+		if($rowcount > 0){
+
+		return $resultado_visualizacao;
+					//return $row;
+
+		}else {
+			$row = "false";
+		}
+
+												
+		
+		$conn->close();	
+		return $row;
+			
+	}			
+
+
+
+
+	function login($email_, $senha_){						
+				
+	$conn = connect();
+
+	$sql_consulta_email = "SELECT NivelDeAcesso_idNivelAcesso as nivel, Nutricionista_idNutricionista as id
+							FROM `Login` WHERE Email = '".$email_."'
+							and Senha = '".$senha_."';";
+
+	
+	$resultado_email = $conn->query($sql_consulta_email);
+	
+
+
+	if (mysqli_num_rows($resultado_email) > 0){
+
+						if($row = $resultado_email->fetch_assoc()){
+							//$nivel = array('nivel' => $row['nivel'] );
+							//$nivel = array('id' => $row['id'] );
+							return $row;
+							//$nivel = $row['nivel'];
+																													
+						}
+		} else {
+			$row = "false";
+		}						
+
+													
+		
+		//$conn->close();
+		$conn->close();	
+		return ($row);
+			
+	}
+
+
+
+	function verificarEmail($email_){
+
+		$conn = connect();
+					
+
+
+		$sql_consulta_email = "SELECT *
+								FROM `Login` WHERE Email = '".$email_."'
+								and NivelDeAcesso_idNivelAcesso = 2;";
+
+		
+		$resultado_email = $conn->query($sql_consulta_email);
+		
+
+		if ($conn->affected_rows == 1){
+						$email = "true";																															
+					} else {
+				$email = "false";
+			}						
+
+													
+		
+		$conn->close();
+		return ($email);
+		echo $email_;
+	}
+
+	function recuperarSenha($email_, $senha_){
+		
+		$conn = connect();
+		
+
+
+		$sql_update_email = "UPDATE `Login` 
+							   set Senha = ?
+							   WHERE Email = ?;";
+
+		
+		$stm = $conn->prepare($sql_update_email);
+		
+
+
+		$stm->bind_param("ss",$senha_, $email_);
+		$stm->execute();
+
+		if ($conn->affected_rows == 1){
+			$update = "true";
+		} else {
+			$update = "false";
+		}
+			
+		return ($update);
+									
+		
+		$stm->close();
+		$conn->close();
+	}
+
+
+	function cadastrarNutricionista(Nutricionista $n){
+
+		$conn = connect();				
+		
+
+
+		$sql_cadastrarNutri = "call cadastrarNutri(?,?,?,?,?,?);";
+
+		
+		$stm = $conn->prepare($sql_cadastrarNutri);
+
+		$data = implode('-', array_reverse(explode('/', $n->getNascimento())));	
+		
+
+		$stm->bind_param("ssssss",$n->getNome(), $data, $n->getEspecialidade(), $n->getEmail(), $n->getSenha(), $n->getTelefoneCel());
+
+		$stm->execute();
+		if ($conn->affected_rows == 1){
+				$insert = "true";
+			} else if(isset($conn->error)){
+				$insert = "existe";
+			}else{
+				$insert = "false";
+			}		
+		return ($insert);	
+								
+		
+		$stm->close();
+		$conn->close();
+	}
+
+
+	function cadastrarUsuario(Usuario $u){
+
+		$conn = connect();
+		session_start();	
+		
+		$sql_cadastrar_user = "call cadastrarUsuarios(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+
+		
+		$stm = $conn->prepare($sql_cadastrar_user);
+
+		$data = implode('-', array_reverse(explode('/', $u->getNascimento())));	
+		
+
+		$stm->bind_param("sssssssssssissss",$u->getNome(), $u->getEndereco(), $data, $u->getSexo(), $u->getMedicamentos(), $u->getDoencas(), $u->getFuma(), $u->getBebe(), $u->getIntoAlimentar(), $u->getObs(), $u->getFuncao(), $_SESSION['idNutricionista'], $u->getEmail(), $u->getSenha(), $u->getTelefoneFixo(), $u->getTelefoneCel());
+
+		//echo $u->getNome()." ".$u->getEndereco()." ".$data." ".$u->getSexo()." ".$u->getMedicamentos()." ".$u->getDoencas()." ".$u->getFuma()." ".$u->getBebe()." ".$u->getIntoAlimentar()." ".$u->getObs()." ".$u->getFuncao()." ".$_SESSION['idNutricionista']." ".$u->getEmail()." ".$u->getSenha()." ".$u->getTelefoneFixo()." ".$u->getTelefoneCel();
+
+		$stm->execute();
+		if ($conn->affected_rows == 1){
+				$insert = "true";
+			} else if(isset($conn->error)){
+				$insert = "false";
+			}else{
+				$insert = "false";
+			}		
+		return ($insert);	
+								
+		
+		$stm->close();
+		$conn->close();
+	}
+
+
+	function cadastrarFeedback($feedback_,$idUser_,$idNutricionista_, $tipo_, $dataDieta_){
+
+		$conn = connect();				
+		
+
+		//call cadastrarFeedBack('Voce deve se esforçar mais para cumprir suas dietas',3,2);
+		$sql_cadastrarFeedback = "call cadastrarFeedBack(?,?,?,?,?);";
+
+		
+		$stm = $conn->prepare($sql_cadastrarFeedback);	
+		
+
+		$stm->bind_param("siiss",$feedback_, $idUser_, $idNutricionista_, $tipo_, $dataDieta_);
+
+		$stm->execute();
+		if ($conn->affected_rows == 1){
+				$insert = "true";
+			} else if(isset($conn->error)){
+				$insert = "error";
+			}else{
+				$insert = "false";
+			}		
+		return ($insert);	
+								
+		
+		$stm->close();
+		$conn->close();
+	}
+
+
+
+	function cadastrarRecomendacoes(Recomendacao $r){
+
+			$conn = connect();				
+			
+
+			//call cadastrarFeedBack('Voce deve se esforçar mais para cumprir suas dietas',3,2);
+			$sql_cadastrarRecomendacao = "call cadastrarRecomendacoes(?,?,?,?,?,?);";
+
+			
+			$stm = $conn->prepare($sql_cadastrarRecomendacao);
+
+			if($r->getTipo() != "Geral"){
+				$r->setUrl("Null");
+			}	
+			
+
+			$stm->bind_param("ssiiss",$r->getDescricao(), $r->getTipo(), $r->getIdNutri(), $r->getIdUser(), $r->getData(), $r->getUrl());
+
+			$stm->execute();
+
+			if ($conn->affected_rows == 1){
+					$insert = "true";
+				} else if(isset($conn->error)){
+					$insert = "error";
+				}else{
+					$insert = "false";
+				}		
+			return ($insert);	
+									
+			
+			$stm->close();
+			$conn->close();
+	}
+
+
+		function alterarUsuarioUpdate(Usuario $u){
+
+			$conn = connect();
+			
+			$sql_alterar_user = "call alterarUsuarios (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+
+			
+			$stm = $conn->prepare($sql_alterar_user);
+
+			$data = implode('-', array_reverse(explode('/', $u->getNascimento())));	
+			
+
+			$stm->bind_param("sssssssssssisss",$u->getNome(), $u->getEndereco(), $data, $u->getSexo(), $u->getMedicamentos(), $u->getDoencas(), $u->getFuma(), $u->getBebe(), $u->getIntoAlimentar(), $u->getObs(), $u->getFuncao(), $u->getId(), $u->getEmail(), $u->getTelefoneFixo(), $u->getTelefoneCel());
+
+			if($stm->execute()){
+				$insert = "true";
+			}else{
+				$insert = "false";
+			}		
+			return ($insert);	
+									
+			
+			$stm->close();
+			$conn->close();
+		}
+
+
+		function listarNutricionistas(){						
+						
+				$conn = connect();
+
+				$sql_consulta_email = "SELECT Nome as nome, DataCadastro as data, idNutricionista as id
+										FROM `Nutricionista`;";
+
+				
+				$resultado_consulta = $conn->query($sql_consulta_email);
+				
+				//$retorno = array();
+
+				if (mysqli_num_rows($resultado_consulta) > 0){
+							return 	$resultado_consulta;																				
+					} else {
+						$row = "false";
+						return $row;
+					}						
+
+															
+				
+				//$conn->close();
+				$conn->close();	
+				
+		}
+
+		function listarPacientes($id_){						
+						
+				$conn = connect();
+
+				$sql_consulta_pacientes = "SELECT Nome as nome, DataCadastro as data, idUsuario as id
+										FROM `Usuario` 
+										where Nutricionista_idNutricionista = $id_;";
+
+				
+				$resultado_consulta = $conn->query($sql_consulta_pacientes);			
+				
+
+				if (mysqli_num_rows($resultado_consulta) > 0){
+							return $resultado_consulta;
+							
+					}
+					 else {
+						$row = "false";
+						return $row;
+					}						
+
+															
+				
+				//$conn->close();
+				$conn->close();	
+				
+		}
+
+
+		function listarPacientesComDietas($idNutricionista_){						
+						
+				$conn = connect();
+
+				$sql_consulta_pacientes = "SELECT distinct Nome as nome, idUsuario as id
+											FROM Usuario u
+											inner join CadastroDeDietas c
+											on(u.idUsuario = c.Usuario_idUsuario)
+											where c.Nutricionista_idNutricionista = '".$idNutricionista_."';";
+
+				
+				$resultado_consulta = $conn->query($sql_consulta_pacientes);			
+				
+
+				if (mysqli_num_rows($resultado_consulta) > 0){
+							return $resultado_consulta;							
+					}else {
+						$row = "false";
+						return $row;
+					}						
+
+															
+				
+				//$conn->close();
+				$conn->close();				
+		}
+
+
+
+		function listarPacientesComDietasPorDatas($idNutricionista_, $idUser_){						
+						
+				$conn = connect();
+
+				$sql_consulta_pacientes = "SELECT distinct Nome as nome, d.DataDieta as data, idUsuario as id
+											FROM Usuario u
+											inner join CadastroDeDietas c
+											on(u.idUsuario = c.Usuario_idUsuario)
+											inner join Dieta_tem_datas d
+											on(c.idCadastroDeDietas = d.CadastroDeDietas_idCadastroDeDietas)
+											where c.Nutricionista_idNutricionista = '".$idNutricionista_."'
+											and u.idUsuario = '".$idUser_."';";
+
+				
+				$resultado_consulta = $conn->query($sql_consulta_pacientes);			
+				
+
+				if (mysqli_num_rows($resultado_consulta) > 0){
+							return $resultado_consulta;
+							
+					}else {
+						$row = "false";
+						return $row;
+					}						
+
+															
+				
+				//$conn->close();
+				$conn->close();				
+		}
+
+
+
+		
+		function alterarNutricionistas($id_){						
+						
+				$conn = connect();
+
+				$sql_consulta_email = "SELECT Nome as nome, Email as email, Especialidade as esp, Nascimento as nasc, Celular as tel
+										FROM `Nutricionista` n, Login l, Telefones t 
+										where n.idNutricionista = $id_
+										and l.Nutricionista_idNutricionista = $id_
+										and t.Nutricionista_idNutricionista = $id_;";
+
+				
+				$resultado_consulta = $conn->query($sql_consulta_email);				
+				
+				$n = new Nutricionista();
+				if ($conn->affected_rows > 0){
+							
+							while($row = $resultado_consulta->fetch_assoc()){								
+
+								$n->setNome($row['nome']);
+								$n->setEmail($row['email']);								
+								$n->setEspecialidade($row['esp']);
+
+								//$data = implode('/', array_reverse(explode('-', $row['nasc'])));
+
+								$n->setNascimento($row['nasc']);
+								$n->setTelefoneCel($row['tel']);
+
+							}
+							return 	$n;																				
+					} else {
+						$n->setNome('false');						
+						return $n;
+					}						
+
+															
+				
+				//$conn->close();
+				$conn->close();	
+				
+		}
+
+
+		function alterarPacientesListagem($idUser_, $idNutri_){						
+						
+				$conn = connect();
+
+				$sql_consulta_email = "SELECT * 
+										FROM  `Usuario` u, Login l, Telefones t
+										WHERE u.idUsuario = $idUser_
+										and u.Nutricionista_idNutricionista = $idNutri_
+										AND l.Usuario_idUsuario = $idUser_
+										AND t.Usuario_idUsuario = $idUser_;";
+
+				
+				$resultado_consulta = $conn->query($sql_consulta_email);				
+				
+				$n = new Usuario();
+				if ($conn->affected_rows > 0){
+							
+								while($row = $resultado_consulta->fetch_assoc()){								
+									$n->setId($row['idUsuario']);		
+									$n->setNome($row['Nome']);	
+									$n->setEmail($row['Email']);
+									//$n->setSenha($row['senha']);
+									$n->setEndereco($row['Endereco']);
+									$n->setTelefoneFixo($row['Fixo']);
+									$n->setTelefoneCel($row['Celular']);
+									$n->setFuncao($row['Funcao']);
+									$n->setNascimento($row['Nascimento']);
+									$n->setSexo($row['Sexo']);
+									$n->setFuma($row['Fuma']);
+									$n->setBebe($row['Bebe']);
+									$n->setMedicamentos($row['Medicamentos']);
+									$n->setDoencas($row['Doencas']);
+									$n->setIntoAlimentar($row['IntoleranciaAlimentar']);
+									$n->setObs($row['Obs']);
+
+								}
+								return 	$n;
+							}else {
+								$n->setNome('false');						
+						return $n;
+					}						
+
+															
+				
+				//$conn->close();
+				$conn->close();	
+				
+		}
+
+
+		//call atualizarNutri(18,'Alexandro','2017-12-03','Nutricinista','alex@alex.com','123456789');
+
+		
+		function alterarNutricionistasCadastro(Nutricionista $n){						
+			$conn = connect();			
+
+
+			$sql_update = "call atualizarNutri(?,?,?,?,?,?);";
+
+			
+			$stm = $conn->prepare($sql_update);
+
+			$data = implode('-', array_reverse(explode('/', $n->getNascimento())));
+			
+
+			$stm->bind_param("isssss",$n->getId(),$n->getNome(),$data,$n->getEspecialidade(),$n->getEmail(),$n->getTelefoneCel());
+
+			if($stm->execute()){
+
+				$insert = "true";
+
+			}else{
+					$insert = "false";
+				}		
+			return ($insert);	
+									
+			
+			$stm->close();
+			$conn->close();
+				
+		}
+
+
+
+		function listarGruposDeDietasCadastradasVisualizar($data_, $idUser_){						
+						
+				$conn = connect();
+
+				$sql_consulta_grupos_porData = "SELECT distinct gAlimentos.Nome as nome, gAlimentos.idGrupoAlimentos as id
+												from Alimentos a
+												inner join CadastroDeDietas_tem_Alimentos cAli
+												on  (a.idAlimentos = cAli.Alimentos_idAlimentos)
+												inner join Dieta_tem_datas dData
+												on (dData.CadastroDeDietas_idCadastroDeDietas = cAli.CadastroDeDietas_idCadastroDeDietas)
+												and dData.DataDieta = '".$data_."'
+												inner join CadastroDeDietas cadDietas
+												on (cadDietas.idCadastroDeDietas = cAli.CadastroDeDietas_idCadastroDeDietas)
+												and cadDietas.Usuario_idUsuario = '".$idUser_."'
+												inner join GrupoDeAlimentos gAlimentos
+												on (a.GrupoDeAlimentos_idGrupoAlimentos = gAlimentos.idGrupoAlimentos)
+												order by gAlimentos.idGrupoAlimentos;";
+
+				
+				$resultado_consulta = $conn->query($sql_consulta_grupos_porData);
+				
+				//$retorno = array();
+				if (mysqli_num_rows($resultado_consulta) > 0){
+							
+							return $resultado_consulta;
+
+				}else{
+					$resultado_consulta = "null";
+					return $resultado_consulta;
+				}
+
+				$conn->close();					
+		}
+
+
+
+		function listarAlimentosCadastradasVisualizar($idGrupo_, $idUser_, $data_){						
+						
+				$conn = connect();
+
+				$sql_consulta_alimentos_porGrupo = "SELECT a.Nome, cAli.Quantidade as recomendacao,cAli.QuantidadeConsumida as consumo, 
+												a.idAlimentos, cAli.CadastroDeDietas_idCadastroDeDietas as idDieta,cAli.ModoDePreparo as preparo,
+												cAli.Hora as hora
+												from Alimentos a
+												inner join CadastroDeDietas_tem_Alimentos cAli
+												on  (a.idAlimentos = cAli.Alimentos_idAlimentos)
+												inner join Dieta_tem_datas dData
+												on (dData.CadastroDeDietas_idCadastroDeDietas = cAli.CadastroDeDietas_idCadastroDeDietas)
+												and dData.DataDieta = '".$data_."'
+												inner join CadastroDeDietas cadDietas
+												on (cadDietas.idCadastroDeDietas = cAli.CadastroDeDietas_idCadastroDeDietas)
+												and cadDietas.Usuario_idUsuario = '".$idUser_."'
+												and a.GrupoDeAlimentos_idGrupoAlimentos = '".$idGrupo_."';";
+
+				
+				$resultado_consulta = $conn->query($sql_consulta_alimentos_porGrupo);
+				
+				//$retorno = array();
+				if (mysqli_num_rows($resultado_consulta) > 0){
+							
+							return $resultado_consulta;
+
+				}else{
+					$resultado_consulta = "null";
+					return $resultado_consulta;
+				}
+
+				$conn->close();					
+		}
+
+
+
+		function listarGruposDietas(){
+			$conn = connect();
+			$sql_listando_todos = "SELECT Nome as nome, idGrupoAlimentos as id
+													FROM  `GrupoDeAlimentos`;";
+							$listaDeGrupos = $conn->query($sql_listando_todos);
+							return $listaDeGrupos;
+			$conn->close();		
+		}
+
+
+
+		function listarAlimentosDietas($id_){
+			$conn = connect();
+			$sql_listando_todos = "SELECT * 
+									FROM  Alimentos 
+									WHERE GrupoDeAlimentos_idGrupoAlimentos ='".$id_."';";
+							$listaDeAlimentosPorGrupo = $conn->query($sql_listando_todos);
+
+							//echo $sql_listando_todos;
+							return $listaDeAlimentosPorGrupo;
+			$conn->close();		
+		}
+
+
+
+
+		function listarAlimentosDietasPorGrupos($data_,$idPessoa_,$idgrupo_){
+
+			$conn = connect();
+			$sql_listando_todos = "SELECT distinct gAlimentos.idGrupoAlimentos
+									from Alimentos a
+									inner join CadastroDeDietas_tem_Alimentos cAli
+									on  (a.idAlimentos = cAli.Alimentos_idAlimentos)
+									inner join Dieta_tem_datas dData
+									on (dData.CadastroDeDietas_idCadastroDeDietas = cAli.CadastroDeDietas_idCadastroDeDietas)
+									and dData.DataDieta = '".$data_."'
+									inner join CadastroDeDietas cadDietas
+									on (cadDietas.idCadastroDeDietas = cAli.CadastroDeDietas_idCadastroDeDietas)
+									and cadDietas.Usuario_idUsuario = '".$idPessoa_."'
+									inner join GrupoDeAlimentos gAlimentos
+									on (a.GrupoDeAlimentos_idGrupoAlimentos = gAlimentos.idGrupoAlimentos);";
+			$listaDeAlimentosPorGrupo = $conn->query($sql_listando_todos);
+
+			if (mysqli_num_rows($listaDeAlimentosPorGrupo) > 0){
+				$listaDeAlimentosPorGrupo = "false";
+				return $listaDeAlimentosPorGrupo;
+			}else{
+
+				$sql_listando_todos = "SELECT * 
+									FROM  Alimentos 
+									WHERE GrupoDeAlimentos_idGrupoAlimentos ='".$idgrupo_."';";
+							$listaDeAlimentosPorGrupo = $conn->query($sql_listando_todos);
+				return $listaDeAlimentosPorGrupo;
+
+			}
+			//echo $sql_listando_todos;
+			
+			$conn->close();
+
+		}
+
+
+
+
+
+		function cadastrarDietas($valores_, $datas_){
+
+			$conn = connect();
+			session_start();
+
+			$sql_cadastrarDietas = "INSERT INTO  
+										`CadastroDeDietas`(`Nutricionista_idNutricionista` , `Usuario_idUsuario` )
+										VALUES (?, ?);";
+			
+			$stm = $conn->prepare($sql_cadastrarDietas);
+
+			$stm->bind_param("ii",$_SESSION['idNutricionista'], $_SESSION['idPacienteDieta']);
+			$stm->execute();  // Insere na tabela de dietas 1
+
+
+
+			$sql_ultimo_id = "SELECT max(idCadastroDeDietas) AS ultimo FROM CadastroDeDietas;"; 
+			$ultimoId = $conn->query($sql_ultimo_id);
+
+			
+			if($linha = $ultimoId->fetch_assoc()){
+				$res = $linha['ultimo'];  // Pega o valor que acabou de ser inserido
+			}
+
+
+			$velhoId = 0;
+			for ($i=0; $i < sizeof($valores_); $i++) {
+
+				if($i % 2 == 0){
+				$valor = $valores_[$i];	
+				}else{
+				$idAlimento = $valores_[$i];
+				} 				
+				
+				if(isset($valor) && isset($idAlimento) && $idAlimento != $velhoId){
+					$velhoId = $idAlimento;
+					$conn = connect();
+
+
+
+					$sql_cadastrarDietas = "INSERT INTO  CadastroDeDietas_tem_Alimentos(CadastroDeDietas_idCadastroDeDietas ,
+																							Alimentos_idAlimentos,
+																							Quantidade)
+																							VALUES (?,?,?);";
+					
+					$stm = $conn->prepare($sql_cadastrarDietas);
+
+					$stm->bind_param("iid", $res, $idAlimento, $valor);
+					$stm->execute();
+					$stm->close();
+					$conn->close();				
+					
+				}
+
+
+				
+
+			}
+			if(sizeof($datas_) > 1){
+				foreach ($datas_ as $key) {
+
+					$conn = connect();
+					$sql_cadastrarDietas = "INSERT INTO Dieta_tem_datas (`DataDieta` ,`CadastroDeDietas_idCadastroDeDietas`)
+												VALUES (?,?);";
+					
+					$stm = $conn->prepare($sql_cadastrarDietas);
+
+					$stm->bind_param("si", $key, $res);
+					$stm->execute();
+					$stm->close();
+					$conn->close();	
+
+				}
+			}else{
+				$conn = connect();
+					$sql_cadastrarDietas = "INSERT INTO Dieta_tem_datas (`DataDieta` ,`CadastroDeDietas_idCadastroDeDietas`)
+												VALUES (?,?);";
+					
+					$stm = $conn->prepare($sql_cadastrarDietas);
+
+					$stm->bind_param("si", $datas_, $res);
+					
+					$stm->execute();
+					$stm->close();
+					$conn->close();	
+			}
+
+			
+		}
+
+
+
+
+
+?>
