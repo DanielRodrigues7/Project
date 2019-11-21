@@ -1,0 +1,37 @@
+<?php
+require_once '../Classes/Pessoa.php';
+require_once '../Classes/Nutricionista.php';
+require_once '../Dao/db.php'; 	
+	
+$n = new nutricionista();
+
+if(isset($_POST['Nome']) && isset($_POST['Email']) && 
+	isset($_GET['id']) && isset($_POST['Especialidade']) &&
+		isset($_POST['nascimento']) && isset($_POST['telefone'])) {
+
+	$n->setNome($_POST['Nome']);	
+	$n->setEmail($_POST['Email']);
+	$n->setId($_GET['id']);
+	$n->setEspecialidade($_POST['Especialidade']);
+	$n->setNascimento($_POST['nascimento']);
+	$n->setTelefoneCel($_POST['telefone']);
+
+	$result = alterarNutricionistasCadastro($n);
+	if(isset($result)){
+		session_start();
+		if($result == "true"){			
+			$_SESSION['msg'] = "sim";
+			echo '<script type="text/javascript">window.location = "http://www.andrototalhealth.esy.es/Html/visualizarProfissionais.php"</script>';
+		}else if($result == "false"){
+			$_SESSION['msg'] = "nao";
+			echo '<script type="text/javascript">window.location = "http://www.andrototalhealth.esy.es/Html/alterarProfissionais.php?id='.$_GET['id'].'"</script>';
+		}else{
+			$_SESSION['msg'] = "nao";
+			echo '<script type="text/javascript">window.location = "http://www.andrototalhealth.esy.es/Html/alterarProfissionais.php?id='.$_GET['id'].'"</script>';
+		}
+	}else{
+		echo '<script type="text/javascript">window.location = "http://www.andrototalhealth.esy.es/Html/homeAdm.php"</script>';
+	}	
+}
+
+?>
