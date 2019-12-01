@@ -1,0 +1,150 @@
+CREATE SCHEMA IF NOT EXISTS 'total_health' DEFAULT CHARACTER SET utf8;
+USE 'Total_health. ;
+
+
+CREATE TABLE IF NOT EXISTS 'Total_health'.'GrupoDeAlimentos' (
+'idGrupoAlimentos· INT NOT NULL AUTO_INCREMENT,
+'Nome' VARCHAR(30) NOT NULL,
+PRIMARY KEY ('idGrupoAlimentos'));
+
+
+CREATE TABLE IF NOT EXISTS 'Total_health'.'Alimentos· (
+'idAlimentos' INT NOT NULL AUTO_INCREMENT,
+'Nome· VARCHAR(80) NOT NULL,
+'Quantidade' DOUBLE(3, 1) NOT NULL,
+'GrupoDeAlimentos_idGrupoAlimentos· INT NOT NULL,
+PRIMARY KEY ('idAlimentos') ,
+FOREIGN KEY (' GrupoDeAlimentos_idGrupoAlimentos')
+R EFERENCES 'T otal_health'.' GrupoDeAlimentos' (' idGrupoAlimentos' ));
+
+
+CREATE TABLE IF NOT EXISTS 'Total_health'.'Nutricionista' (
+'idNutricionista' INT NOT NULL AUTO_INCREMENT,
+'Nome' VARCHAR(45) NOT NULL,
+'Nascimento' DATE NOT NULL,
+'DataCadastro' TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+'Especialidade' VARCHAR(30) NULL,
+PRIMARY KEY ('idNutricionista'));
+
+
+CREATE TABLE IF NOT EXISTS ' Total_health'.'Usuario' (
+' idUsuario' INT NOT NULL AUTO_INCREMENT,
+'Nome' VARCHAR(45) NOT NULL,
+' Endereco' VARCHAR(45) NOT NULL,
+' Nascimento' DATE NULL,
+'Sexo' CHAR(2) NOT NULL,
+'Medicamentos' VARCHAR(320) NULL,
+' Doencas' VARCHAR(320) NULL,
+' Fuma' CHAR(2) NULL,
+'Bebe' CHAR(2) NULL,
+'lntoleranciaAlimentar' VARCHAR(320) NULL,
+'Obs' VARCHAR(320) NULL,
+' DataCadastro' TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+' Funcao' VARCHAR(20) NULL,
+'Nutricionista_idNutricionista' INT NOT NULL,
+PRIMARY KEY (' idUsuario' ),
+FOREIGN KEY (' Nutricionista_idNutricionista')
+REFERENCES 'Total_health' .'Nutricionista' ('idNutricionista'));
+
+
+CREA E TABLE IF NOT EXI TS ' Total_health' .' NivelDeAcesso' (
+' idNivelAcesso' INT NOT NULL AUTO_INCREMENT,
+' NivelAcesso' V ARC HAR ( 15) NU LL,
+PRIMARY KEY (' idNivelAcesso ' ));
+
+
+CREATE TABLE IF NOT EXISTS ' Total_health' .' Login' (
+'idAcesso' INT NOT NULL AUTO_INCREMENT,
+' Email' VARCHAR(30) NOT NULL,
+'Senha' VARCHAR(50) NOT NULL,
+'Nutricionista_idNutricionista' INT,
+'Usuario_idUsuario' INT,
+' NivelDeAcesso_idNivelAcesso' INT NOT NULL,
+PRIMARY KEY (' idAcesso ' ),
+FOREIGN KEY (' Nutricionista_idNutricionista' )
+REFERENCES 'Total_health' .' Nutricionista' ('idNutricionista' ),
+FOREIGN KEY (' Usuario_idUsuario' )
+REFERENCES ' Total_health' .' Usuario' (' idUsuario ' ),
+FOREIGN KEY (' NivelDeAcesso_idNivelAcesso' )
+R EFERENCES 'T otal_health' .' Nível DeAcesso' (' idNivelAcesso' ));
+
+
+CREATE ABLE IF NOT EXIST 'Total_health' .' Telefones' (
+'idTelefones' INT NOT NULL AUTO_INCREMENT,
+'Fixo' INT NULL,
+' Celular' INT NULL,
+'Nutricionista_idNutricionista ' INT,
+'Usuario_idUsuario' INT,
+PRIMARY KEY ('idTelefones'),
+FOREIGN KEY (' Nutricionista_idNutricionista' )
+R EFERENCES 'T otal_health'.' Nutricionista' (' idNutricionista'),
+FOREIGN KEY (' Usuario_idUsuario')
+REFERENCES ' Total_health' .'Usuario' (' idUsuario ' ));
+
+
+CREATE T ABLE IF NOT EXISTS 'Total_health' .' CadastroDeDietas' (
+' idCadastroDeDietas' INT NOT NULL AUTO_INCREMENT,
+'Nutricionista_idNutricionista' INT NOT NULL,
+'Usuario_idUsuario' INT NOT NULL,
+PRIMARY KEY (' idCadastroDeDietas'),
+FOREIGN KEY (' Nutricionista_idNutricionista')
+R EFERENCES 'T otal_health' .' Nutricionista' (' idNutricionista'),
+FOREIGN KEY (' Usuario_idUsuario')
+REFERENCES ' Total_health' .'Usuario' (' idUsuario ' ));
+
+
+CREATE ABLE IF NOT EXIST ' Total_health' .' CadastroDeDietas_tem_Alimentos' (
+' CadastroDeDietas_idCadastroDeDietas' INT NOT NULL,
+' Alimentos_idAlimentos' INT NOT NULL,
+' QuantidadeConsumida' DOUBLE(3, 1) NULL,
+' ModoDePreparo' VARCHAR(l5) NULL,
+FOREIGN KEY (' CadastroDeDietas_idCadastroDeDietas')
+R EFERENCES 'T otal_health' .' Cadastro De Dietas' (' idCadastroDeDietas' ),
+FOREIGN KEY (' Alimentos_idAlimentos' )
+REFERENCES 'Total_health' .'Alimentos' ('idAlimentos'));
+
+
+CREATE TABLE IF NOT EXISTS 'Total_health' .'Recomendacoes' (
+'idRecomendacoes' INT NOT NULL AUTO_INCREMENT,
+'Descricao' VARCHAR(550) NULL,
+' Tipo' VARCHAR(l5) NULL,
+'Consumo' double(3,2) NULL
+'Data' TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+'Nutricionista_idNutricionista' INT NOT NULL,
+' Usuario_idUsuario' INT NOT NULL
+PRIMARY KEY (' idRecomendacoes'),
+FOREIGN KEY (' Nutricionista_idNutricionista')
+R EFERENCES ' Total_health'.' Nutricionista' (' idNutricionista' ),
+FOREIGN KEY (' Usuario_idUsuario' )
+REFERENCES 'Total_health' .' Usuario' ('idUsuario ') );
+
+
+CREATE TABLE IF NOT EXISTS ' Data' (
+' idData' INT NOT NULL AUTO_INCREMENT,
+'data' DATE NOT NULL,
+'Recomendacoes_idRecomendacoes' INT NOT NULL,
+PRIMARY KEY (' idData'),
+FOREIGN KEY (' Recomendacoes_idRecomendacoes' )
+R EFERENCES 'Recomendacoes' (' idRecomendacoes')) ;
+
+
+CREATE TABLE IF NOT EXISTS 'Total_health'. ' Dieta_tem_datas' (
+'idDietas_tem_datas' INT NOT NULL AUTO_INCREMENT,
+'DataDieta' DATE NOT NULL,
+' CadastroDeDietas_idCadastroDeDietas' INT NOT NULL,
+PRIMARY KEY (' idDietas_tem_datas'),
+FOREIGN KEY (' CadastroDeDietas_idCadastroDeDietas')
+REFERENCES 'Total_health' .'CadastroDeDietas' ('idCadastroDeDietas') );
+
+
+CREATE TABLE IF NOT EXISTS ' Total_health' .' FeedBack'
+'idFeedBack' INT NOT NULL AUTO_INCREMENT,
+' Feedback' VARCHAR(500) NOT NULL,
+' Data' TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+'Usuario_idUsuario' INT NOT NULL
+' Nutricionista_idNutricionista' INT NOT NULL,
+PRIMARY KEY ('idFeedBack'),
+FOREIGN KEY (' Usuario_idUsuario' )
+REFERENCES 'Total_health' .' Usuario' ('idUsuario' ),
+FOREIGN KEY (' Nutricionista_idNutricionista')
+R EFERENCES 'T otal_health' .' Nutricionista ' (' idNutricionista' ));
