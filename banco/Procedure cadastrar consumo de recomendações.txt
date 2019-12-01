@@ -1,0 +1,13 @@
+delimiter $$
+create procedure cadastrarConsumoRecomendacoes(in Consumo_ double(3,2),
+                                               in usuarioID_ int,
+                                               in Tipo_ varchar(15))
+begin
+
+    UPDATE Recomendacoes
+    SET Consumo = Consumo + Consumo_
+    WHERE Usuario_idUsuario = usuarioID_
+         and Tipo = Tipo_;
+
+end $$
+delimiter ;

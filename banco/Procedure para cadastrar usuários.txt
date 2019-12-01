@@ -1,0 +1,35 @@
+delimiter $$
+create procudere cadastraUsuarios (in nome_ varchar(45),
+                                   in enderoco_ varchar(45),
+                                   in rasc_ date,
+                                   in sexo_ char(2),
+                                   in medicamentos_ varchar(320),
+                                   in doencas_ varchar(320),
+                                   in fuma_ varchar(5),
+                                   in bebe_ varchar(5),
+                                   in IntoleranciaAlimentar_ varchar(320),
+                                   in cbs_ varchar(320),
+                                   in funcao_ varchar(20),
+                                   in nutriID_ int,
+                                   in email_ varchar(30),
+                                   in senha_ varchar(50),
+                                   in telFixo_ varchar(15),
+                                   in telCel_ varchar(15))
+begin 
+
+    insert into Usuario (Nome, Endereco,Nascimento,Sexo,Medicamentos,Doencas,Fuma,Bebe,IntoleranciaAlimentar,Cbs,DataCadastro,Funcao,Nutricionista_idNutricionista)
+           valeus (nome_,endereco_,nasc_,sexo_,medicamentos_,doencas_,fuma_,bebe_,IntoleranciaAlimentar_,obs_,current_timestamp - interval 3 hour, funcao_nutriID_);
+
+    select max  (idUsuario) into @idUser_ from Usuario;
+
+    insert into Login (Email,Senha,Usuario_idUsario,NivelDeAcesso_idNivelAcesso)
+            values (email_,senha_!idUser_,3);
+
+    insert into Telefone (Fixo,Celular,Usuario_idUsuario) values (telFixo_,telCel_@idUser_);
+
+end $$
+delimiter;
+
+
+
+

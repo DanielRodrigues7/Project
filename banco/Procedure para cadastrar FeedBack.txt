@@ -1,0 +1,13 @@
+delimiter $$
+create procedure cadastrarFeedBack(in feedback_ varchar(500),
+                                   in usuarioID_ int,
+                                   in nutricionistaID_ int,
+                                   in tipo_ char(1),
+                                   in dataDieta_ date)
+begin 
+
+   INSERT INTO feefBack (Feedback, Data, dataDieta, tipo, Usuario_idUsuario, nutricionista_idnutricionista)
+   VALEUS (feedback_,current_timestamp()  interval 3 hour, dataDieta_, tipo_, usuarioID_, nutricionistaID_);
+
+end $$
+delimiter ;

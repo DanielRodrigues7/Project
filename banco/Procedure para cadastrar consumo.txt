@@ -1,0 +1,32 @@
+delimiter $$
+create procedure CadastrarConsumo (in quantiConsumo_ double,
+                                   in modoPreparo_ varchar(15),
+                                   in idDietas_ int,
+                                   in idAlimentos_ int,
+                                   in hora_ varchar(9))
+begin 
+
+   SELECT CURTINE() - interval 3 hour into @hora_;
+   
+   if (SELECT COUNT(*) FROM 'CadastroDietas_trem_alimentos' WHERE QuantidadeConsumida != 'null'
+    and Alimentos_idAlimentos = idAlimento_and CadastroDeDietas_idCadastroDeDietas = idDietas_ > 0)then
+ 
+
+     select distinct Quantidade into @quantidade_ from CadastroDeDietas_tem_Alimentos
+     where Alimentos_idAlimentos = idAlimento_
+     and CadastroDeDietas_idCadastroDeDietas = idDietas_;
+     
+     insert into CadastroDeDietas_tem_Alimentos (cadastroDeDietas_idCadastroDeDietas, Alimentos_idAlimentos, QuantidadeConsumida, ModoDePreparo, Quantidade, Hora)
+       values(idDietas_,idAlientos_, quantiConsumo_, modoPreparo_,@quantidade_, hora_);
+else
+      update CadastroDeDieta_tem_Alimentos set QuantidadeConsumida = quantiConsumo_,ModoDePreparo = modoPreparo_,Hora = hora_
+      where CadastroDeDietas_idCadstroDeDietas = idDietas_
+      and Alimentos_idAlimentos = idAlimento_;
+ end if;
+ end $$
+delimiter;    
+
+
+
+
+

@@ -1,0 +1,30 @@
+delimiter $$
+create procedure cadastrarRecomendacoes(in descricao_ varchar(550),
+                                        in tipo_ varchar(15),
+                                        in nutricionistaID_ int,
+                                        in usuarioID_ int,
+                                        in data_ date,
+                                        in url_ varchar(100))
+begin
+select max (idRecomendacoes) into @ultimo from Recomendacoes;
+
+       if((SELECT COUNT(*)
+           FROM 'Recomendacoes'
+           WHERE Descricao = descricao_) = 0) then
+
+       INSERT INTO Recomendacoes (Descricao, Tipo, Consumo, Data, Nutricionista_idNutricionista, Usuario_idUsuario, url)
+       VALEUS (descricao_, tipo_, 0, current_timestamp -interval 3 hour, nutricionistaID_, usuarioID_, url_);
+
+       SELECT MAX(idRecomendacoes) INTO @idRecomendacoes from Recomendacoes;
+
+       INSERT INTO Dara (data,Recomendacoes_idRecomendacoes) values(data_,@idRecomendacoes);
+
+else
+
+     INSERT INTO Data (data,Recomendacoes_idRecomendacoes) values (data_,@ultimo);
+end if;
+
+end $$
+
+delimiter ;
+

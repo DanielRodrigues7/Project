@@ -1,0 +1,27 @@
+delimiter $$
+create procedure cadastrarNutri (in nome_ varchar(45),
+                                 in nascimento_ date,
+                                 in especialidade_ varchar(34),
+                                 in email_ varchar(30),
+                                 in senha_ varchar(50),
+                                 in tel_ varchar(15))
+begin
+  
+    if (select count(*) from Login where Email = email_ and NivelDeAcesso_idNivelAcesso = 2 > 0 ) then 
+          signal sqlstade '45000'
+       set message_text = 'exixte';
+  else
+  insert into Nutricionista (Nome, Nascimento,DataCadastro,Especialidade)
+          values (nome_,nascimento_,current_timestamp - interval 3 hour,especialidade_);
+
+    select max(idNutricionista) into @idNutri_ from Nutricionista;
+
+    insert into Login (Email,Senha,Nutricionista_idNutricionista,NivelDeAcesso_idnivelAcesso)
+           values (email_,senha_,@idNutri_,2);
+
+   insert into telefones (Celular,Nutricionista_idNutricionista) values (tel_,@idNutri_);
+    end if;
+end $$
+delimiter ;
+
+

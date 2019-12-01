@@ -1,0 +1,11 @@
+delimiter $$
+create procedure recuperarSenha(in email_ varchar(30),
+               in senha_ varchar(50))
+begin
+
+    if((select count(*) from Login where Email = email_) > 0)then
+       UPDATE Login SET Senha = senha_
+          where Email = email_;
+     end if;
+end $$
+delimiter ;
